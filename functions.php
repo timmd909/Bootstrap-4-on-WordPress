@@ -89,23 +89,24 @@
 	 * @return void
 	 * @author Keir Whitaker
 	 */
+	if ( ! function_exists( 'bootstrap_script_init' ) ) {
+		function bootstrap_script_init() {
 
-	function bootstrap_script_init() {
+			// Get theme version number (located in style.css)
+			$theme = wp_get_theme();
 
-		// Get theme version number (located in style.css)
-		$theme = wp_get_theme();
+			wp_register_script('bootstrap', get_template_directory_uri(). '/js/bootstrap.bundle.min.js', array( 'jquery' ), BOOTSTRAP_VERSION, true);
+			wp_enqueue_script('bootstrap');
 
-		wp_register_script('bootstrap', get_template_directory_uri(). '/js/bootstrap.bundle.min.js', array( 'jquery' ), BOOTSTRAP_VERSION, true);
-		wp_enqueue_script('bootstrap');
+			wp_register_script( 'site', get_template_directory_uri().'/js/site.js', array( 'jquery', 'bootstrap' ), $theme->get( 'Version' ), true );
+			wp_enqueue_script( 'site' );
 
-		wp_register_script( 'site', get_template_directory_uri().'/js/site.js', array( 'jquery', 'bootstrap' ), $theme->get( 'Version' ), true );
-		wp_enqueue_script( 'site' );
+			wp_register_style( 'bootstrap', get_stylesheet_directory_uri().'/css/bootstrap.min.css', array(), BOOTSTRAP_VERSION, 'all' );
+			wp_enqueue_style( 'bootstrap' );
 
-		wp_register_style( 'bootstrap', get_stylesheet_directory_uri().'/css/bootstrap.min.css', array(), BOOTSTRAP_VERSION, 'all' );
-		wp_enqueue_style( 'bootstrap' );
-
-		wp_register_style( 'screen', get_stylesheet_directory_uri().'/style.css', array(), $theme->get( 'Version' ), 'screen' );
-		wp_enqueue_style( 'screen' );
+			wp_register_style( 'screen', get_stylesheet_directory_uri().'/style.css', array(), $theme->get( 'Version' ), 'screen' );
+			wp_enqueue_style( 'screen' );
+		}
 	}
 
 	/* ========================================================================================================================
@@ -116,7 +117,7 @@
 
 	//remove wp version
 	function theme_remove_version() {
-	return '';
+		return '';
 	}
 
 	add_filter('the_generator', 'theme_remove_version');
@@ -193,18 +194,20 @@
 	 * @return void
 	 * @author Keir Whitaker
 	 */
-	function bootstrap_comment( $comment, $args, $depth ) {
-		$GLOBALS['comment'] = $comment;
-		?>
-		<?php if ( $comment->comment_approved == '1' ): ?>
-		<li class="media">
-			<div class="media-left">
-				<?php echo get_avatar( $comment ); ?>
-			</div>
-			<div class="media-body">
-				<h4 class="media-heading"><?php comment_author_link() ?></h4>
-				<time><a href="#comment-<?php comment_ID() ?>" pubdate><?php comment_date() ?> at <?php comment_time() ?></a></time>
-				<?php comment_text() ?>
-			</div>
-		<?php endif;
+	if ( ! function_exists( 'bootstrap_comment' ) ) {
+		function bootstrap_comment( $comment, $args, $depth ) {
+			$GLOBALS['comment'] = $comment;
+			?>
+			<?php if ( $comment->comment_approved == '1' ): ?>
+			<li class="media">
+				<div class="media-left">
+					<?php echo get_avatar( $comment ); ?>
+				</div>
+				<div class="media-body">
+					<h4 class="media-heading"><?php comment_author_link() ?></h4>
+					<time><a href="#comment-<?php comment_ID() ?>" pubdate><?php comment_date() ?> at <?php comment_time() ?></a></time>
+					<?php comment_text() ?>
+				</div>
+			<?php endif;
+		}
 	}
